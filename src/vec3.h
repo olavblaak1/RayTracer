@@ -39,15 +39,15 @@ class Vec3 {
 			return *this *= 1/scalar;
 		}
 
-		inline float length() {
+		inline float length() const {
 			return sqrt(length_squared());
 		}
 
-		inline float length_squared() {
+		inline float length_squared() const {
 			return(elements[0] * elements[0] + elements[1] * elements[1] + elements[2] * elements[2]);
 		}
 
-		inline bool normalized() {
+		inline bool normalized() const {
 			return (length() == 1.0f);
 		}
 };
