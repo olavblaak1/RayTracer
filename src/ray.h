@@ -8,27 +8,27 @@
 class ray {
 	public:
 
-		ray(const Vec3& position, const Vec3& direction) : pos(position), dir(direction) {
+		ray(const vec3& position, const vec3& direction) : pos(position), dir(direction) {
 			assert(direction.length_squared() != 0);
 		};
 
-		const Point3& position() const { return pos; };
-		const Vec3& direction() const { return dir; };
+		const point3& position() const { return pos; };
+		const vec3& direction() const { return dir; };
 
 
-		void set_position(const Vec3 &position) { pos = position; }
-		void set_direction(const Vec3 &direction) {
+		void set_position(const vec3 &position) { pos = position; }
+		void set_direction(const vec3 &direction) {
 			assert(direction.length() != 0);
 			dir = direction;
 		}
 
 
-		const Vec3& at(float t) const {
+		const vec3& at(float t) const {
 			assert(t > 0);
 			return (pos + t * dir);
 		}
 
 	private:
-		Point3 pos;
-		Vec3 dir
+		point3 pos;
+		vec3 dir;
 };
