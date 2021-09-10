@@ -1,3 +1,4 @@
+#include "sphere.h"
 #include "vec3.h"
 #include "color.h"
 #include "ray.h"
@@ -5,6 +6,9 @@
 #include <iostream>
 #include <fstream>
 #include <exception>
+
+
+
 
 float hit_sphere(const ray& trace, const float radius, const point3& center);
 color ray_color(const ray& r);
@@ -27,7 +31,7 @@ color ray_color(const ray& r);
 	simplifying and substituting P(t) for A + bt this becomes:	(bt)^2 + 2bt • (A-C) + (A-C)^2 - r^2 = 0	(2)
 	with a^2 meaning a•a if a is a vector.
 
-	We can easily find for which t (2) is satisfied by calculating the discriminant (squared),
+	We can easily find for which t (2) is satisfied by calculating the discriminant,
 	if discriminant < 0, then the ray did not hit the sphere and we do not have to draw anything
 	if discriminant > 0, the ray hit the sphere and we must change that pixels color
 */
@@ -65,6 +69,9 @@ int main(int argc, char* argv[]) {
 		image << (int)height << '\n';
 		image << MAX_COLORS << '\n';
 
+		// Add objects to the world (spheres, cubes, ...)
+
+
 		// Write image
 		for (int i = 0; i < height; i++) {
 			std::cerr << "\rScanlines remaining: " << height - i << ' ' << std::flush;
@@ -97,16 +104,4 @@ color ray_color(const ray& r) {
 	vec3 unit_direction = unit_vector(r.direction());
 	t = 0.5f * (unit_direction.y() + 1.0f);
 	return (1.0f - t) * color(1.0f, 1.0f, 1.0f) + t * color(0.5f, 0.7f, 1.0f);
-}
-
-
-float hit_sphere(const ray& trace, const float radius, const point3& center) {
-	const vec3 oc = trace.position() - center;
-	const float a = dot(trace.direction(), trace.direction());
-	const float b = 2.0f * dot(trace.direction(), oc);
-	const float c = dot(oc, oc) - radius * radius;
-	const float discriminant = b * b - 4.0f * a * c;
-	if (discriminant < 0)
-		return -1.0f;
-	return (-b - sqrt(discriminant)) / (2.0f * a);
 }
