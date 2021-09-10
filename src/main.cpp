@@ -1,7 +1,8 @@
-#include "sphere.h"
-#include "vec3.h"
+#include "constants_rt.h"
 #include "color.h"
-#include "ray.h"
+#include "hittables.h"
+#include "sphere.h"
+
 
 #include <iostream>
 #include <fstream>
@@ -10,8 +11,7 @@
 
 
 
-float hit_sphere(const ray& trace, const float radius, const point3& center);
-color ray_color(const ray& r);
+color ray_color(const ray& r, const hittables& world);
 
 /*====================================================================*/
 //                EXAMPLE OF RAYTRACE WITH A SPHERE					  //
@@ -64,6 +64,7 @@ int main(int argc, char* argv[]) {
 		const vec3 top_left_corner = origin + vertical / 2 - horizontal / 2 - vec3(0, 0, focal_length);
 
 		// Write header
+
 		image << "P3\n";
 		image << (int)width << '\n';
 		image << (int)height << '\n';
@@ -71,6 +72,9 @@ int main(int argc, char* argv[]) {
 
 		// Add objects to the world (spheres, cubes, ...)
 
+		hittables world;
+		world.add(make_shared<sphere>(point3(0, 0, -1), 0.5));
+		world.add(make_shared<sphere>(point3(0, -100.5, -1), 100));
 
 		// Write image
 		for (int i = 0; i < height; i++) {
@@ -79,7 +83,7 @@ int main(int argc, char* argv[]) {
 				float u = i / (height - 1);
 				float v = j / (width - 1);
 				ray current_ray(origin, top_left_corner + v * horizontal - u * vertical - origin);
-				write_pixel(image, ray_color(current_ray));
+				write_pixel(image, ray_color(current_ray, world));
 			}
 			image << '\n';
 		}
@@ -95,13 +99,12 @@ int main(int argc, char* argv[]) {
 }
 
 
-color ray_color(const ray& r) {
-	float t = hit_sphere(r, 0.5, point3(0, 0, -1));
-	if (t > 0.0) {
-		vec3 N = unit_vector(r.at(t) - vec3(0, 0, -1));
-		return 0.5 * (color(N.x() + 1, N.y() + 1, N.z() + 1));
-	}
+color ray_color(const ray& r, const hittables& world) {
+	hit_record rec;
+	if(world.hit(r, 0, infinity, rec))
+		return 0.5 * (rec.normal + color(1, 1, 1));
+
 	vec3 unit_direction = unit_vector(r.direction());
-	t = 0.5f * (unit_direction.y() + 1.0f);
+	const float t = 0.5f * (unit_direction.y() + 1.0f);
 	return (1.0f - t) * color(1.0f, 1.0f, 1.0f) + t * color(0.5f, 0.7f, 1.0f);
 }

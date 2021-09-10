@@ -18,5 +18,7 @@
     <ClInclude Include="src\ray.h" />
     <ClInclude Include="src\hittable.h" />
     <ClInclude Include="src\sphere.h" />
+    <ClInclude Include="src\hittables.h" />
+    <ClInclude Include="src\constants_rt.h" />
   </ItemGroup>
 </Project>

@@ -2,7 +2,7 @@
 
 #include "hittable.h"
 
-class sphere : hittable {
+class sphere : public hittable {
 	public:
 		sphere(const point3& center = point3(0, 0, 0), const float radius = 0) : center(center), radius(radius) {};
 		virtual bool hit(const ray& r, const float t_min, const float t_max, hit_record& rec) const override;
@@ -32,7 +32,8 @@ bool sphere::hit(const ray& r, const float t_min, const float t_max, hit_record&
 
 	rec.t = root;
 	rec.hit = r.at(root);
-	rec.normal = (rec.hit - center) / radius;
+	const vec3 outward_normal = (rec.hit - center) / radius;
+	rec.set_normal_direction(r, outward_normal);
 
 	return true;
 };
