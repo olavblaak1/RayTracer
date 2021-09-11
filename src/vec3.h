@@ -54,6 +54,15 @@ class vec3 {
 		inline bool normalized() const {
 			return (length() == 1.0f);
 		}
+
+		inline static vec3 random_point() {
+			return vec3(random_float(), random_float(), random_float());
+		}
+
+
+		inline static vec3 random_point(float min, float max) {
+			return vec3(random_float(min, max), random_float(min, max), random_float(min, max));
+		}
 };
 
 // Type aliases
@@ -106,4 +115,12 @@ inline vec3 cross(const vec3& u, const vec3& v) {
 
 inline vec3 unit_vector(vec3 v) {
 	return v / v.length();
+}
+
+inline point3 point_in_unit_sphere() {
+	point3 point;
+	do {
+		point = vec3::random_point();
+	} while (point.length_squared() >= 1);
+	return point;
 }

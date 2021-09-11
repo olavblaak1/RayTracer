@@ -20,5 +20,6 @@
     <ClInclude Include="src\sphere.h" />
     <ClInclude Include="src\hittables.h" />
     <ClInclude Include="src\constants_rt.h" />
+    <ClInclude Include="src\camera.h" />
   </ItemGroup>
 </Project>

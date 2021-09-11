@@ -24,7 +24,6 @@ class ray {
 
 
 		const vec3 at(float t) const {
-			assert(t > 0);
 			return (pos + t * dir);
 		}
 

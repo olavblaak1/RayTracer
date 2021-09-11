@@ -22,6 +22,7 @@
     <ClCompile Include="src/main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\color.h" />
     <ClInclude Include="src/vec3.h" />
     <ClInclude Include="src\constants_rt.h" />

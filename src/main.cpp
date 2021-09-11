@@ -2,7 +2,7 @@
 #include "color.h"
 #include "hittables.h"
 #include "sphere.h"
-
+#include "camera.h"
 
 #include <iostream>
 #include <fstream>
@@ -11,7 +11,7 @@
 
 
 
-color ray_color(const ray& r, const hittables& world);
+color ray_color(const ray& r, const hittables& world, int depth);
 
 /*====================================================================*/
 //                EXAMPLE OF RAYTRACE WITH A SPHERE					  //
@@ -47,21 +47,15 @@ int main(int argc, char* argv[]) {
 
 		// Define image parameters
 
-		const float aspect_ratio = 16.0f / 9.0f;
 		const float height = 1080.0f;
 		const float width = 1920.0f;
 		const int MAX_COLORS = 255;
+		const int samples_per_pixel = 4;
+		const int max_depth = 64;
 
-		// Define viewport
+		// Define camera
 
-		const float viewport_height = 2.0f;
-		const float viewport_width = viewport_height * aspect_ratio;
-		const float focal_length = 1.0f;
-
-		const point3 origin(0,0,0);
-		const vec3 horizontal(viewport_width, 0, 0);
-		const vec3 vertical(0, viewport_height, 0);
-		const vec3 top_left_corner = origin + vertical / 2 - horizontal / 2 - vec3(0, 0, focal_length);
+		camera viewport = camera();
 
 		// Write header
 
@@ -80,10 +74,13 @@ int main(int argc, char* argv[]) {
 		for (int i = 0; i < height; i++) {
 			std::cerr << "\rScanlines remaining: " << height - i << ' ' << std::flush;
 			for (int j = 0; j < width; j++) {
-				float u = i / (height - 1);
-				float v = j / (width - 1);
-				ray current_ray(origin, top_left_corner + v * horizontal - u * vertical - origin);
-				write_pixel(image, ray_color(current_ray, world));
+				color pixel_color(0,0,0);
+				for (int k = 0; k < samples_per_pixel; k++) {
+					float u = (i + random_float()) / (height - 1);
+					float v = (j + random_float()) / (width - 1);
+					pixel_color += ray_color(viewport.get_ray(u, v), world, max_depth);
+				}
+				write_pixel(image, pixel_color, samples_per_pixel);
 			}
 			image << '\n';
 		}
@@ -99,10 +96,15 @@ int main(int argc, char* argv[]) {
 }
 
 
-color ray_color(const ray& r, const hittables& world) {
+color ray_color(const ray& r, const hittables& world, int depth) {
 	hit_record rec;
-	if(world.hit(r, 0, infinity, rec))
-		return 0.5 * (rec.normal + color(1, 1, 1));
+	if (depth <= 0)
+		return color(0, 0, 0);
+
+	if (world.hit(r, 0.001f, infinity, rec)) {
+		point3 target = rec.hit + rec.normal + point_in_unit_sphere();
+		return 0.5 * ray_color(ray(rec.hit, target - rec.hit), world, depth-1);
+	}
 
 	vec3 unit_direction = unit_vector(r.direction());
 	const float t = 0.5f * (unit_direction.y() + 1.0f);
